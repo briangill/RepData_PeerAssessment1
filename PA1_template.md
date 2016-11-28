@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
@@ -11,14 +6,16 @@ output:
 1. We begin by loading the data into a dataframe called "activity".  The provided datafile
 "activity.zip" should be stored in the working directory.
 
-```{r}
+
+```r
 activity <- read.csv(unz("activity.zip", "activity.csv"), colClasses=c("integer","Date","integer"))
 ```
 
 2. Next, we combine the "date" and "interval" variables in the original data to create a new
 "DateTime" variable.
 
-```{r}
+
+```r
 activity$DateTime<-strptime(paste(activity$date,sprintf("%06d",activity$interval)),"%Y-%m-%d %H%M%S")
 ```
 
@@ -26,25 +23,41 @@ activity$DateTime<-strptime(paste(activity$date,sprintf("%06d",activity$interval
 
 1. First we compute the total number of steps taken per day.
 
-```{r}
+
+```r
 daily_total <- tapply(activity$steps,activity$date,sum,na.rm=TRUE)
 ```
 
 2. Next, we make a histogram of the total number of steps taken each day.
 
-```{r Total Steps per Day}
+
+```r
 hist(daily_total,breaks=seq(0,22000, by=2000),
      xlab="Total Steps Taken per Day", ylab="Number of Days",
      main="Total Number of Steps Taken per Day")
 ```
 
-3. Finally, we calculate the mean and median of the total number of steps taken per day.  As computed
-by the code below, the mean number of steps per day is `r round(mean(daily_total),1)` and the median
-is `r median(daily_total)`.
+![](PA1_template_files/figure-html/Total Steps per Day-1.png)<!-- -->
 
-```{r}
+3. Finally, we calculate the mean and median of the total number of steps taken per day.  As computed
+by the code below, the mean number of steps per day is 9354.2 and the median
+is 10395.
+
+
+```r
 mean(daily_total)
+```
+
+```
+## [1] 9354.23
+```
+
+```r
 median(daily_total)
+```
+
+```
+## [1] 10395
 ```
 
 ## What is the average daily activity pattern?
@@ -52,7 +65,8 @@ median(daily_total)
 1. We now construct a time series plot of the 5-minute interval (x-axis) and the average number of 
 steps taken, averaged across all days (y-axis).
 
-```{r Time Series Plot}
+
+```r
 mean_steps <- tapply(activity$steps,activity$interval,mean,na.rm=TRUE)
 plot(activity$interval[1:288], mean_steps, type="l",
      main="Average Daily Activity Pattern by Time of Day", 
@@ -61,23 +75,43 @@ plot(activity$interval[1:288], mean_steps, type="l",
 axis(1,at=seq(0,2400,by=400),labels=c("00:00","04:00","08:00","12:00","16:00","20:00","24:00"))
 ```
 
+![](PA1_template_files/figure-html/Time Series Plot-1.png)<!-- -->
+
 2. On average across all days in the dataset, the maximum number of steps occurs in the five minute 
-time interval at `r names(which.max(mean_steps))`, with an average of 
-`r round(mean_steps[which.max(mean_steps)],1)` steps during this five minute interval.
+time interval at 835, with an average of 
+206.2 steps during this five minute interval.
 This is determined using the code below:
 
-```{r}
+
+```r
 names(which.max(mean_steps))
+```
+
+```
+## [1] "835"
+```
+
+```r
 mean_steps[which.max(mean_steps)]
+```
+
+```
+##      835 
+## 206.1698
 ```
 
 ## Imputing missing values
 
-1. The total number of missing values in the dataset is `r sum(is.na(activity$steps))`, which can be 
+1. The total number of missing values in the dataset is 2304, which can be 
 determined using the code below:
 
-```{r}
+
+```r
 sum(is.na(activity$steps))
+```
+
+```
+## [1] 2304
 ```
 
 2. We will impute all of the missing values in the dataset by using the mean number of steps for 
@@ -87,7 +121,8 @@ interval.
 3. The new dataset with missing data filled in is created as follows, using the strategy described 
 in #2 above:
 
-```{r}
+
+```r
 activity_imputed <- activity
 for (i in 1:nrow(activity_imputed)){
       if (is.na(activity_imputed$steps[i])) {
@@ -99,33 +134,48 @@ for (i in 1:nrow(activity_imputed)){
 
 4. Using the imputed data, we now construct a new histogram of the total number of steps taken each day: 
 
-```{r Imputed Total Steps per Day}
+
+```r
 daily_total_imputed <- tapply(activity_imputed$steps,activity_imputed$date,sum,na.rm=TRUE)
 hist(daily_total_imputed,breaks=seq(0,22000, by=2000),
      xlab="Total Steps Taken per Day", ylab="Number of Days",
      main="Total Number of Steps Taken per Day \n(with Missing Data Imputed)")
 ```
 
+![](PA1_template_files/figure-html/Imputed Total Steps per Day-1.png)<!-- -->
+
 In the original histogram (prior to filling in missing data), there were 
-`r sum(daily_total < 2000)` days with a total of fewer than 2000 steps, which resulted in a 
+10 days with a total of fewer than 2000 steps, which resulted in a 
 distribution which looked bimodal.  After imputing missing values, there are only 
-`r sum(daily_total_imputed  < 2000)` such days, and the distribution no longer looks bimodal.
+2 such days, and the distribution no longer looks bimodal.
 It seems that most of the days in the original data with very low values for the total number of 
 steps actually had a large amount of missing data.
 
 After filling in the missing data, the mean number of steps per day is 
-`r as.integer(mean(daily_total_imputed))` and the median is 
-`r as.integer(median(daily_total_imputed))`, 
+10766 and the median is 
+10766, 
 as computed by the commands below:
 
-```{r}
+
+```r
 mean(daily_total_imputed)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(daily_total_imputed)
 ```
 
+```
+## [1] 10766.19
+```
+
 Both the mean and the median for the data with missing values imputed are higher than the values 
-computed prior to filling in the missing data (which were mean = `r round(mean(daily_total),1)` and 
-median = `r median(daily_total)`).  This was to be expected since we originally computed the total 
+computed prior to filling in the missing data (which were mean = 9354.2 and 
+median = 10395).  This was to be expected since we originally computed the total 
 number of steps for each day by simply ignoring all missing data, which effectively assumes that 
 there were 0 steps in any time interval where the data was missing.  When we fill in the missing 
 data, these total values can only increase, so both the eman and the median will increase.
@@ -135,15 +185,24 @@ data, these total values can only increase, so both the eman and the median will
 1. We begin by creating a new factor variable in the dataset to indicate whether a given date is a 
 weekday or weekend day.
 
-```{r}
+
+```r
 activity_imputed$weekday <- ifelse(weekdays(activity_imputed$DateTime) %in% 
                                          c("Saturday","Sunday"),"weekend","weekday")
 ```
 
 2. Finally, we construct a panel plot containing time series plots to compare the average number of steps taken in each 5 minute time interval for weekdays vs. weekends.
 
-```{r Weekday vs Weekend Activity}
+
+```r
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.3.2
+```
+
+```r
 p <- ggplot(activity_imputed, aes(interval, steps))
 p + stat_summary(fun.y="mean", geom="line") + facet_grid(weekday ~ .) +
       labs(x="Time of Day (5 minute Intervals)", y="Average Steps per 5 Minute Interval",
@@ -151,3 +210,5 @@ p + stat_summary(fun.y="mean", geom="line") + facet_grid(weekday ~ .) +
       scale_x_continuous(breaks = seq(0,2400,400),
                          labels = c("00:00","04:00","08:00","12:00","16:00","20:00","24:00"))
 ```
+
+![](PA1_template_files/figure-html/Weekday vs Weekend Activity-1.png)<!-- -->
