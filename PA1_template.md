@@ -3,7 +3,7 @@
 
 ## Loading and preprocessing the data
 
-1. We begin by loading the data into a dataframe called "activity".  The provided datafile
+We begin by loading the data into a dataframe called "activity".  The provided datafile
 "activity.zip" should be stored in the working directory.
 
 
@@ -11,7 +11,7 @@
 activity <- read.csv(unz("activity.zip", "activity.csv"), colClasses=c("integer","Date","integer"))
 ```
 
-2. Next, we combine the "date" and "interval" variables in the original data to create a new
+Next, we combine the "date" and "interval" variables in the original data to create a new
 "DateTime" variable.
 
 
@@ -21,14 +21,14 @@ activity$DateTime<-strptime(paste(activity$date,sprintf("%06d",activity$interval
 
 ## What is mean total number of steps taken per day?
 
-1. First we compute the total number of steps taken per day.
+First we compute the total number of steps taken per day.
 
 
 ```r
 daily_total <- tapply(activity$steps,activity$date,sum,na.rm=TRUE)
 ```
 
-2. Next, we make a histogram of the total number of steps taken each day.
+Next, we make a histogram of the total number of steps taken each day.
 
 
 ```r
@@ -39,7 +39,7 @@ hist(daily_total,breaks=seq(0,22000, by=2000),
 
 ![](PA1_template_files/figure-html/Total Steps per Day-1.png)<!-- -->
 
-3. Finally, we calculate the mean and median of the total number of steps taken per day.  As computed
+Finally, we calculate the mean and median of the total number of steps taken per day.  As computed
 by the code below, the mean number of steps per day is 9354.2 and the median
 is 10395.
 
@@ -62,7 +62,7 @@ median(daily_total)
 
 ## What is the average daily activity pattern?
 
-1. We now construct a time series plot of the 5-minute interval (x-axis) and the average number of 
+We now construct a time series plot of the 5-minute interval (x-axis) and the average number of 
 steps taken, averaged across all days (y-axis).
 
 
@@ -77,7 +77,7 @@ axis(1,at=seq(0,2400,by=400),labels=c("00:00","04:00","08:00","12:00","16:00","2
 
 ![](PA1_template_files/figure-html/Time Series Plot-1.png)<!-- -->
 
-2. On average across all days in the dataset, the maximum number of steps occurs in the five minute 
+On average across all days in the dataset, the maximum number of steps occurs in the five minute 
 time interval at 835, with an average of 
 206.2 steps during this five minute interval.
 This is determined using the code below:
@@ -102,7 +102,7 @@ mean_steps[which.max(mean_steps)]
 
 ## Imputing missing values
 
-1. The total number of missing values in the dataset is 2304, which can be 
+The total number of missing values in the dataset is 2304, which can be 
 determined using the code below:
 
 
@@ -114,12 +114,12 @@ sum(is.na(activity$steps))
 ## [1] 2304
 ```
 
-2. We will impute all of the missing values in the dataset by using the mean number of steps for 
+We will impute all of the missing values in the dataset by using the mean number of steps for 
 that same 5-minute interval for all other days in the dataset which have non-missing data for that 
 interval. 
 
-3. The new dataset with missing data filled in is created as follows, using the strategy described 
-in #2 above:
+The new dataset with missing data filled in is created as follows, using the strategy described 
+above:
 
 
 ```r
@@ -132,7 +132,7 @@ for (i in 1:nrow(activity_imputed)){
 }
 ```
 
-4. Using the imputed data, we now construct a new histogram of the total number of steps taken each day: 
+Using the imputed data, we now construct a new histogram of the total number of steps taken each day:
 
 
 ```r
@@ -182,7 +182,7 @@ data, these total values can only increase, so both the eman and the median will
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-1. We begin by creating a new factor variable in the dataset to indicate whether a given date is a 
+We begin by creating a new factor variable in the dataset to indicate whether a given date is a 
 weekday or weekend day.
 
 
@@ -191,7 +191,7 @@ activity_imputed$weekday <- ifelse(weekdays(activity_imputed$DateTime) %in%
                                          c("Saturday","Sunday"),"weekend","weekday")
 ```
 
-2. Finally, we construct a panel plot containing time series plots to compare the average number of steps taken in each 5 minute time interval for weekdays vs. weekends.
+Finally, we construct a panel plot containing time series plots to compare the average number of steps taken in each 5 minute time interval for weekdays vs. weekends.
 
 
 ```r
